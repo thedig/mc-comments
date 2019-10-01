@@ -1,52 +1,61 @@
-console.log('This is the main entry point');
+// console.log('This is the main entry point');
 
 
-const comments = [];
+let comments = [];
 
-async function prePopComments() {
-    
-    // let comments = [
-    //     { id: 1, name: 'test', created: Date.now(), message: 'test text 123' },
-    //     { id: 2, name: 'test2', created: Date.now() + 1000, message: 'test text 456789' }
-    // ];
+setupInitialComments();
+// newComment('dig', 'I like ice cream');
+// newComment('dig2', 'I love pizza');
+addCommentButtonSetup();
 
-    let onLoadComments = await getComments();
-    
-    // getComment(2);
 
-    // try {
-        // const data = await getComment('http://example.com/answer', { id: 4 });
-    // const oneComment = await getComment(4);
-    // console.log(JSON.stringify(oneComment)); // JSON-string from `response.json()` call
-    // } catch (error) {
-    //     console.error(error);
-    // }
-
-    console.log(onLoadComments);
-
-    // addCommentsTo
-    addCommentsToDom(onLoadComments);
-
-    // console.log(JSON.parse(onLoadComments));
-}
-
-prePopComments();
-
-function addCommentsToDom(comments) {
-    const ulEl = document.getElementById('comment-list');
-    ulEl.setAttribute('class', 'comment-list');
-    // comments.forEach(comment => {
-    //     const commEl = document.createElement('li');
-    //     commEl.innerText = `${comment.message}`;
-    //     ulEl.append(commEl);
-    // });
-    comments.forEach(comment => {
-        createCommentObj(ulEl, comment);
+function addCommentButtonSetup() {
+    document.getElementById('submit-comment').addEventListener('click', function (e) {
+        // var element = e.target;
+        // // do anything you want with the element clicked
+        // console.log(element);
+        let name = document.getElementById('comment-name').value;
+        let message = document.getElementById('comment-body').value;
+        // debugger;
+        if (name.length > 0 && message.length > 0) {
+            newComment(name, message);
+            document.getElementById('comment-name').value = '';
+            document.getElementById('comment-body').value = '';
+        }
     });
 
 }
 
-function createCommentObj(listEl, comment) {
+// document.addEventListener('click', function (e) {
+//     var element = e.target;
+//     // do anything you want with the element clicked
+//     console.log(element);
+// });
+
+async function setupInitialComments() {
+    let onLoadComments = await getComments();
+    comments = onLoadComments;
+    addCommentsToDom(onLoadComments);
+}
+
+function newComment(name, message) {
+    let comment = {name: name, message: message};
+    let dt = new Date();
+    comment.created = `${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:${dt.getSeconds()}`;
+    const ulEl = document.getElementById('comment-list');
+    createAndAppendCommentEl(ulEl, comment);
+}
+
+
+function addCommentsToDom(comments) {
+    const ulEl = document.getElementById('comment-list');
+    ulEl.setAttribute('class', 'comment-list');
+    comments.forEach(comment => {
+        createAndAppendCommentEl(ulEl, comment);
+    });
+}
+
+function createAndAppendCommentEl(listEl, comment) {
     const commEl = document.createElement('li');
     commEl.setAttribute('id', `comment_${comment.id}`);
     commEl.setAttribute('class', 'comment');
