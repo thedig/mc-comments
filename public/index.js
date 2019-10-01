@@ -4,33 +4,29 @@
 let comments = [];
 
 setupInitialComments();
-// newComment('dig', 'I like ice cream');
-// newComment('dig2', 'I love pizza');
 addCommentButtonSetup();
 
 
 function addCommentButtonSetup() {
-    document.getElementById('submit-comment').addEventListener('click', function (e) {
-        // var element = e.target;
-        // // do anything you want with the element clicked
-        // console.log(element);
-        let name = document.getElementById('comment-name').value;
-        let message = document.getElementById('comment-body').value;
-        // debugger;
-        if (name.length > 0 && message.length > 0) {
-            newComment(name, message);
-            document.getElementById('comment-name').value = '';
-            document.getElementById('comment-body').value = '';
-        }
-    });
-
+    document.getElementById('submit-comment').addEventListener('click', createComment);
 }
 
-// document.addEventListener('click', function (e) {
-//     var element = e.target;
-//     // do anything you want with the element clicked
-//     console.log(element);
-// });
+async function createComment() {
+    let name = document.getElementById('comment-name').value;
+    let message = document.getElementById('comment-body').value;
+    if (name.length > 0 && message.length > 0) {
+        try {
+            let commentId = await postComment(name, message);
+            let comment = await getComment(commentId.id);
+            newComment(comment);
+            document.getElementById('comment-name').value = '';
+            document.getElementById('comment-body').value = '';
+        } catch(e) {
+            console.error(e);
+            
+        }
+    }
+}
 
 async function setupInitialComments() {
     let onLoadComments = await getComments();
@@ -38,14 +34,11 @@ async function setupInitialComments() {
     addCommentsToDom(onLoadComments);
 }
 
-function newComment(name, message) {
-    let comment = {name: name, message: message};
-    let dt = new Date();
-    comment.created = `${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:${dt.getSeconds()}`;
+function newComment(comment) {
+    // let comment = {name: name, message: message};
     const ulEl = document.getElementById('comment-list');
     createAndAppendCommentEl(ulEl, comment);
 }
-
 
 function addCommentsToDom(comments) {
     const ulEl = document.getElementById('comment-list');
@@ -73,19 +66,19 @@ function createAndAppendCommentEl(listEl, comment) {
     listEl.append(commEl);
 }
 
-// function getComments() {
-//     let xhr = new XMLHttpRequest();
-//     xhr.open('GET', '/getComments');
-//     xhr.onload = function (e) {
-//         console.log(e, xhr);
-//         if (xhr.status === 200) {
-//             console.log('success: ' + xhr.responseText);
-//         } else {
-//             console.log('failure: ' + xhr.responseText);
-//         }
-//     };
-//     xhr.send();
-// }
+// AJAX calls
+
+async function postComment(name, message) {
+    let body = { name: name, message: message };
+    const response = await fetch('/createComment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    });
+    return await response.json();
+}
 
 async function getComments() {
     const response = await fetch('/getComments', {
@@ -106,6 +99,5 @@ async function getComment(id) {
             // 'Content-Type': 'application/x-www-form-urlencoded',
         }
     });
-    console.log(response);
-    return await response.json(); // parses JSON response into native JavaScript objects
+    return await response.json();
 }
