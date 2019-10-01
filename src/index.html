@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Comments Feed</title>
+    <script src="/ajax.js" defer></script>
     <script src="/index.js" defer></script>
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
@@ -15,12 +16,13 @@
         <div>
           <input id="comment-name" />
         </div>
-        <div>
+        <div class="body-block">
           <textarea id="comment-body"></textarea>
         </div>
         <button id="submit-comment">Comment</button>
       </div>
       <div class="comment-feed">
+        <button id="clear-comments">Clear All</button>
         <ul id ="comment-list">
 
         </ul>

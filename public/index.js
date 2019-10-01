@@ -1,14 +1,19 @@
 // console.log('This is the main entry point');
 
+let { postComment, getComments, getComment, deleteComments } = window.ajaxCalls;
 
 let comments = [];
 
 setupInitialComments();
 addCommentButtonSetup();
-
+clearCommentsButtonSetup();
 
 function addCommentButtonSetup() {
     document.getElementById('submit-comment').addEventListener('click', createComment);
+}
+
+function clearCommentsButtonSetup() {
+    document.getElementById('clear-comments').addEventListener('click', clearComments);
 }
 
 async function createComment() {
@@ -23,8 +28,17 @@ async function createComment() {
             document.getElementById('comment-body').value = '';
         } catch(e) {
             console.error(e);
-            
         }
+    }
+}
+
+async function clearComments() {
+    try {
+        let response = await deleteComments();
+        console.log(response);
+        clearDOMComments();
+    } catch(e) {
+        console.error(e);
     }
 }
 
@@ -34,8 +48,15 @@ async function setupInitialComments() {
     addCommentsToDom(onLoadComments);
 }
 
+function clearDOMComments() {
+    const ulEl = document.getElementById('comment-list');
+    // Remove nodes from memory:
+    while (ulEl.firstChild) {
+        ulEl.removeChild(ulEl.firstChild);
+    }
+}
+
 function newComment(comment) {
-    // let comment = {name: name, message: message};
     const ulEl = document.getElementById('comment-list');
     createAndAppendCommentEl(ulEl, comment);
 }
@@ -64,40 +85,4 @@ function createAndAppendCommentEl(listEl, comment) {
     commEl.append(infoDiv);
 
     listEl.append(commEl);
-}
-
-// AJAX calls
-
-async function postComment(name, message) {
-    let body = { name: name, message: message };
-    const response = await fetch('/createComment', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-    });
-    return await response.json();
-}
-
-async function getComments() {
-    const response = await fetch('/getComments', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-
-    });
-    return await response.json()
-}
-
-async function getComment(id) {
-    const response = await fetch(`/getComment?id=${id}`, {
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        headers: {
-            'Content-Type': 'application/json'
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-        }
-    });
-    return await response.json();
 }
