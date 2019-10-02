@@ -58,3 +58,8 @@ app.get('/', function(request, response) {
   const rootDir = __dirname.replace('/server', '');
   response.sendFile(`${rootDir}/src/index.html`);
 });
+
+app.get('/tests', function (request, response) {
+  const rootDir = __dirname.replace('/server', '');
+  response.sendFile(`${rootDir}/src/tests.html`);
+});

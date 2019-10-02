@@ -1,12 +1,35 @@
 // console.log('This is the main entry point');
 
-let { postComment, getComments, getComment, deleteComments } = window.ajaxCalls;
+let { 
+    postComment,
+    getComments,
+    getComment,
+    deleteComments 
+} = window.ajaxCalls;
+
+let { 
+    newComment,
+    clearChildren,
+    addCommentsToDom,
+    notifyUser 
+} = window.domutils;
 
 let comments = [];
 
 setupInitialComments();
 addCommentButtonSetup();
 clearCommentsButtonSetup();
+
+async function setupInitialComments() {
+    try {
+        let onLoadComments = await getComments();
+        comments = onLoadComments;
+        const ulEl = document.getElementById('comment-list');
+        addCommentsToDom(ulEl, onLoadComments);
+    } catch(e) {
+        console.error(e);
+    }
+}
 
 function addCommentButtonSetup() {
     document.getElementById('submit-comment').addEventListener('click', createComment);
@@ -15,6 +38,10 @@ function addCommentButtonSetup() {
 function clearCommentsButtonSetup() {
     document.getElementById('clear-comments').addEventListener('click', clearComments);
 }
+
+
+
+// Handlers:
 
 async function createComment() {
     let name = document.getElementById('comment-name').value;
@@ -26,6 +53,9 @@ async function createComment() {
             newComment(comment);
             document.getElementById('comment-name').value = '';
             document.getElementById('comment-body').value = '';
+            notifyUser(`New comment added: ${comment.message}, by ${comment.name}`);
+            // Maintaining local store
+            comments = [ ...comments, comment];
         } catch(e) {
             console.error(e);
         }
@@ -36,53 +66,10 @@ async function clearComments() {
     try {
         let response = await deleteComments();
         console.log(response);
-        clearDOMComments();
+        const ulEl = document.getElementById('comment-list');
+        clearChildren(ulEl);
     } catch(e) {
         console.error(e);
     }
 }
 
-async function setupInitialComments() {
-    let onLoadComments = await getComments();
-    comments = onLoadComments;
-    addCommentsToDom(onLoadComments);
-}
-
-function clearDOMComments() {
-    const ulEl = document.getElementById('comment-list');
-    // Remove nodes from memory:
-    while (ulEl.firstChild) {
-        ulEl.removeChild(ulEl.firstChild);
-    }
-}
-
-function newComment(comment) {
-    const ulEl = document.getElementById('comment-list');
-    createAndAppendCommentEl(ulEl, comment);
-}
-
-function addCommentsToDom(comments) {
-    const ulEl = document.getElementById('comment-list');
-    ulEl.setAttribute('class', 'comment-list');
-    comments.forEach(comment => {
-        createAndAppendCommentEl(ulEl, comment);
-    });
-}
-
-function createAndAppendCommentEl(listEl, comment) {
-    const commEl = document.createElement('li');
-    commEl.setAttribute('id', `comment_${comment.id}`);
-    commEl.setAttribute('class', 'comment');
-
-    const bodyDiv = document.createElement('div');
-    bodyDiv.setAttribute('class', 'comment__body');
-    bodyDiv.innerText = `${comment.message}`;
-    commEl.append(bodyDiv);
-
-    const infoDiv = document.createElement('div');
-    infoDiv.setAttribute('class', 'comment__info');
-    infoDiv.innerText = `${comment.name} on ${comment.created}`;
-    commEl.append(infoDiv);
-
-    listEl.append(commEl);
-}
