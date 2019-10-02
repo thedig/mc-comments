@@ -1,10 +1,9 @@
-let { createAndAppendCommentEl, clearChildren } = window.domutils;
+let { newComment, clearChildren } = domutils;
 
-
-(function testCreateAndAppendCommentEl() {
+(function testNewComment() {
     let element = document.createElement('div');
     element.setAttribute('id', 'comment-list');
-    createAndAppendCommentEl(element, {id: 1, message: 'hello there', name: 'myself'});
+    newComment(element, {id: 1, message: 'hello there', name: 'myself'});
 
     let result = element.firstChild.innerText.includes('hello there');
     addTestObj(`successfully appends: ${result}`);
@@ -14,8 +13,8 @@ let { createAndAppendCommentEl, clearChildren } = window.domutils;
 (function testClearChildren() {
     let element = document.createElement('div');
     element.setAttribute('id', 'comment-list');
-    createAndAppendCommentEl(element, { id: 1, message: 'hello there', name: 'myself' });
-    createAndAppendCommentEl(element, { id: 2, message: 'goodbye', name: 'myself' });
+    newComment(element, { id: 1, message: 'hello there', name: 'myself' });
+    newComment(element, { id: 2, message: 'goodbye', name: 'myself' });
 
     clearChildren(element);
 
@@ -23,7 +22,6 @@ let { createAndAppendCommentEl, clearChildren } = window.domutils;
     addTestObj(`successfully removes all: ${result}`);
     element.remove();
 })();
-
 
 
 function addTestObj(result) {

@@ -5,14 +5,15 @@ let {
     getComments,
     getComment,
     deleteComments 
-} = window.ajaxCalls;
+// } = window.ajaxCalls;
+} = ajaxCalls;
 
 let { 
     newComment,
     clearChildren,
     addCommentsToDom,
     notifyUser 
-} = window.domutils;
+} = domutils;
 
 let comments = [];
 
@@ -50,7 +51,8 @@ async function createComment() {
         try {
             let commentId = await postComment(name, message);
             let comment = await getComment(commentId.id);
-            newComment(comment);
+            const ulEl = document.getElementById('comment-list');
+            newComment(ulEl, comment);
             document.getElementById('comment-name').value = '';
             document.getElementById('comment-body').value = '';
             notifyUser(`New comment added: ${comment.message}, by ${comment.name}`);
