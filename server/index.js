@@ -25,14 +25,13 @@ app.post('/createComment', function(request, response) {
 });
 
 app.get('/getComment', function(request, response) {
-  // XHR Get requests cannot have a body:
+
+  // Bug? XHR GET requests cannot have a body, browser API blocks:
   // const { body } = request;
   // const { id } = body;
   const {query} = request;
   const { id } = query;
-  console.log('query, id', query, id);
   comment.getComment(id).then(result => {
-    console.log('res:', result);
     response.send(result);
   });
 });

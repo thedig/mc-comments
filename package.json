@@ -8,13 +8,19 @@
     "start": "",
     "server": "nodemon server",
     "// TODO: You can remove concurrently if you're not using a front-end JS framework": "",
-    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run start\""
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run start\"",
+    "test:e2e": "mocha --timeout 20000 e2e/tests.js"
   },
   "devDependencies": {
     "body-parser": "1.18.3",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "chromedriver": "^77.0.0",
     "concurrently": "^4.1.0",
     "express": "4.16.4",
+    "mocha": "^6.2.1",
     "nodemon": "^1.18.10",
+    "selenium-webdriver": "^4.0.0-alpha.5",
     "sqlite3": "^4.0.7"
   },
   "keywords": [],

@@ -67,7 +67,6 @@ async function createComment() {
 async function clearComments() {
     try {
         let response = await deleteComments();
-        console.log(response);
         const ulEl = document.getElementById('comment-list');
         clearChildren(ulEl);
     } catch(e) {
